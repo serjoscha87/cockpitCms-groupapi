@@ -2,7 +2,7 @@
   
 $this->bind("/api/grp/:group", function($params) {  
     
-    
+    header("Content-Type: application/json");
     $group = $params["group"];
     $allS = [];
     $allC = [];
