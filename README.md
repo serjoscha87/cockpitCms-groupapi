@@ -1,11 +1,8 @@
-# cockpitCms-groupapi
-Provides a group API for cockpit CMS
+# CockpitCMS-DataGroupApi
+Provides an API for getting all singleton data + collection entries that are determined withunder a passed group's name
 
+**Provides the following API-Endpoint:**
 
-Provides the following URL:
+/api/datagroup/:groupName
 
-/api/grp/:group
-
-The Api it returns is currently public - so use at your own discretion. 
-
-PR's welcome
+Singleton data and collection entries are returned according to their actual ACLs while public access is also preved and respected for the request.

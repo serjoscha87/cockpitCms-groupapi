@@ -1,41 +1,20 @@
 <?php
-  
-$this->bind("/api/grp/:group", function($params) {  
-    
-    header("Content-Type: application/json");
-    $group = $params["group"];
-    $allS = [];
-    $allC = [];
-    $allC = $this->module("collections")->collections();
-    $allS = $this->module("singletons")->singletons();
-    $options = [];
 
-    if ($lang = $this->param("lang", false)) $options["lang"] = $lang;
-    $options["populate"] = true;
-    if ($ignoreDefaultFallback = $this->param("ignoreDefaultFallback", false)) $options["ignoreDefaultFallback"] = $ignoreDefaultFallback;
-    if ($user) $options["user"] = $user;
+if (COCKPIT_API_REQUEST) {
 
-    foreach($allS as $key => $value) { 
-        $singleton = $this->module("singletons")->getData($key, $options);
-        if($value["group"] == $group){ 
-            $singletons[] = $singleton; 
+    $this->on('cockpit.rest.init', function($routes) {
+        $routes['datagroup'] = 'DataGroupApi\\Controller\\RestApi';
+    });
+
+    // allow public access to this addon's routes
+    $this->on('cockpit.api.authenticate', function($data) {
+        if ($data['user'] || $data['resource'] != 'datagroup') return;
+
+        if (isset($data['query']['params'][1])) {
+            // copied this from a cockpit core-module - without this our API requests are *always* blocked while we are not authenticated.
+            // However this looks dangerous - not sure about it ...
+            $data['authenticated'] = true;
+            $data['user'] = ['_id' => null, 'group' => 'public'];
         }
-    }
-    
-    foreach($allC as $key => $value) { 
-        //$collections = $this->module("collections")->getData($key, $options);
-        $collection = $this->module("collections")->find($key, $options);
-        if($value["group"] == $group){
-            $collections[] = $collection;
-        }
-    }
-    $returnArray = [];
-    $returnArray["singletons"] = $singletons;
-    $returnArray["collections"] = $collections;
-    echo json_encode($returnArray);
-    
-    
-    exit();
-
-
-});
+    });
+}
